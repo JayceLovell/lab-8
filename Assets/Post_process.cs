@@ -8,7 +8,12 @@ public class Post_process: MonoBehaviour
     public ComputeShader textureShader;
 
     private RenderTexture _rTexture;
-    public Light sun;
+    public Light sun;    
+    public int NumSamples;
+    public int Density;
+    public int Weight;
+    public float Decay;
+    public int Exposure;
     Camera cam;
     private void OnRenderImage(RenderTexture source, RenderTexture destintion){
         
@@ -50,7 +55,12 @@ public class Post_process: MonoBehaviour
 
     void Start()
     {
-      cam = GetComponent<Camera>();
+        cam = GetComponent<Camera>();
+        NumSamples = 50;
+        Density = 1;
+        Weight = 1;
+        Decay = 0.25f;
+        Exposure = 1;
     }
 
 }
