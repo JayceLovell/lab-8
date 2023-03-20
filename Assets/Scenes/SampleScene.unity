@@ -315,6 +315,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   textureShader: {fileID: 7200000, guid: 61a4d3223c118c748ae127f14fecdeb6, type: 3}
+  num_samples: 50
+  density: 1
+  weight: 1
+  decay: 0.25
+  exposure: 1
   sun: {fileID: 705507994}
 --- !u!1 &1134501816
 GameObject:

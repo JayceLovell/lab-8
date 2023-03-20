@@ -12,7 +12,34 @@ RWTexture2D<float4> screen_buffer;
 [numthreads(8,8,1)]
 void CSMain (uint3 id : SV_DispatchThreadID)
 {
-    // TODO: Implement psudocode from the lab
+    float density = 1.0;
+    float weight = 1.0;
+    float decay = 1.0;
+    float exposure = 1.0;
+    int num_samples = 100;
 
-    result_buffer[id.xy] = screen_buffer[id.xy];
+    float2 texCoords = float2(id.xy);
+
+    // Calculate the distance between each pixel and the sun
+    float2 delta = (texCoords - sunScreenPos.xy);
+    delta *= 1.0f / num_samples * density;
+
+    // Get the color of the current pixel and set the initial value of the illuminationDecay variable to 1.0
+    float4 colour = screen_buffer[id.xy];
+    float illuminationDecay = 1.0f;
+
+    // Loop through the num_samples and calculate the color of each sample
+    for (int i = 0; i < num_samples; i++) {
+        // Move to our next sample
+        texCoords -= delta;
+        // Get the color of the current sample
+        float4 sampleColour = screen_buffer[round(texCoords)];
+        sampleColour *= illuminationDecay * weight;
+        colour += sampleColour;
+        // Update the illumination decay
+        illuminationDecay *= decay;
+    }
+
+    // Set the final color value for the current pixel in the output buffer
+    result_buffer[id.xy] = colour;
 }
