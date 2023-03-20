@@ -4,8 +4,6 @@
 // Create a RenderTexture with enableRandomWrite flag and set it
 // with cs.SetTexture
 
-Buffer[][]<float4> output_buffer;
-
 float3 sunScreenPos;
 
 RWTexture2D<float4> result_buffer;
@@ -17,44 +15,4 @@ void CSMain (uint3 id : SV_DispatchThreadID)
     // TODO: Implement psudocode from the lab
 
     result_buffer[id.xy] = screen_buffer[id.xy];
-}
-
-
-void crepuscularRays(Buffer[][]<float4> input_buffer, float3 sunScreenPos)
-{
-    // Parameters that influence how the sampling looks.
-    float density = 1.0;
-    float weight = 1.0;
-    float decay = 1.0;
-    float exposure = 1.0;
-    int num_samples = 100;
-    
-    for each pixel
-    {
-        //Pixel coords would be where the pixel would be on the screen.
-        For example, (0, 0) or (width, height)
-        float2 texCoords = pixelCoords
-        //We need to find out how far away our samples are from each other
-        float2 delta = (texCoords - sunScreenPos.xy)
-        delta *= 1.0f / num_samples * density;
-
-        //The colour at our current pixel
-        float4 colour = input_buffer[pixelCoords];
-
-        float illuminationDecay = 1.0f;
-        
-        for each sample
-        {
-            // Move to our next sample
-            texCoords = texCoords - delta;
-            // Our samples get weaker the farther away we get from the current pixel
-            float4 sampleColour = input_buffer[floor(texCoords)];
-            sampleColour *= illuminationDecay * weight;
-            colour += sampleColour;
-            illuminationDecay *= decay;
-        }
-        
-        //Set our colour
-        output_buffer[pixelCoords] = colour * exposure;
-    }
 }
