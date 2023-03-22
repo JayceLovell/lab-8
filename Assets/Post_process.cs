@@ -6,6 +6,7 @@ public class Post_process : MonoBehaviour
 {
     public ComputeShader textureShader;
 
+    // Add public parameters for the compute shader variables
     public int num_samples = 50;
     public float density = 1.0f;
     public float weight = 1.0f;
@@ -36,6 +37,7 @@ public class Post_process : MonoBehaviour
 
         int kernel = textureShader.FindKernel("CSMain");
 
+        // Pass the public parameters to the compute shader
         textureShader.SetFloats("sunScreenPos", sunScreenArray);
         textureShader.SetFloat("density", density);
         textureShader.SetFloat("weight", weight);
