@@ -7,39 +7,48 @@
 float3 sunScreenPos;
 
 RWTexture2D<float4> result_buffer;
-RWTexture2D<float4> screen_buffer;
+Texture2D<float4> screen_buffer;
+RWBuffer<float4> output_buffer;
+RWBuffer<float4> input_buffer;
+SamplerState screen_sampler;
 
 [numthreads(8,8,1)]
-void CSMain (uint3 id : SV_DispatchThreadID)
+void CSMain(uint3 id : SV_DispatchThreadID)
 {
     float density = 1.0;
     float weight = 1.0;
-    float decay = 1.0;
+    float decay = 0.25;
     float exposure = 1.0;
-    int num_samples = 100;
+    int num_samples = 50;
 
-    float2 texCoords = float2(id.xy);
+    //for (int j = 0; j < pixelCoords; j++)
+
+    //float2 texCoords = float2(id.xy);
+    float2 pixelCoords = float2(id.xy);
+    float2 texCoords = pixelCoords;
 
     // Calculate the distance between each pixel and the sun
     float2 delta = (texCoords - sunScreenPos.xy);
     delta *= 1.0f / num_samples * density;
 
     // Get the color of the current pixel and set the initial value of the illuminationDecay variable to 1.0
-    float4 colour = screen_buffer[id.xy];
+   float4 colour = screen_buffer.Load(int3(floor(texCoords), 0));
+
     float illuminationDecay = 1.0f;
 
     // Loop through the num_samples and calculate the color of each sample
     for (int i = 0; i < num_samples; i++) {
         // Move to our next sample
-        texCoords -= delta;
-        // Get the color of the current sample
-        float4 sampleColour = screen_buffer[round(texCoords)];
+        texCoords = texCoords - delta;
+        // Get the color of the current sample        
+        float4 sampleColour = screen_buffer.Load(int3(floor(texCoords), 0));
+        
         sampleColour *= illuminationDecay * weight;
         colour += sampleColour;
         // Update the illumination decay
         illuminationDecay *= decay;
     }
 
-    // Set the final color value for the current pixel in the output buffer
-    result_buffer[id.xy] = colour;
+    // Set the final color value for the current pixel in the output buffer  
+    result_buffer[pixelCoords] = float4(colour.xyz * exposure, 1);
 }
